@@ -13,11 +13,17 @@ def main_menu() -> None:
 
 def list_books():
     with open("books.txt", "r") as file:
-        file.read()
-
+        content = file.read()
+        print(content)
 
 def list_checked_books():
-    pass
+    with open("books.txt", "r") as file:
+        line = file.readline()
+        while line:
+            items = line.split(",")
+            if items[3].replace("\n", "") == "T":
+                print(line)
+            line = file.readline()
 
 
 def add_book():
@@ -31,7 +37,17 @@ def add_book():
 
 
 def delete_book():
-    pass
+    isbn_number = input("What is isbn number: ").strip()
+    with open("books.txt", "r") as file:
+        line = file.readline()
+        while line:
+            items = line.split(",")
+            if items[0] == isbn_number:
+                if items[3].replace("\n", "") == "F":
+                    del line
+                elif items[3].replace("\n", "") == "T":
+                    print("This book is already checked out.")
+            line = file.readline()
 
 
 def search_by_isbn():
@@ -59,27 +75,43 @@ def search_by_name():
 
 
 def check_out_book():
-    pass
+    isbn_number = input("What is isbn number: ").strip()
+    student_id = input("What is student's id: ").strip()
+
+    with open("books.txt", "r") as file:
+        line = file.readline()
+        while line:
+            items = line.split(",")
+            if isbn_number == items[0] and items[3].replace("\n", "") == "F":
+                items[3] = "T"
+                break
+            line = file.readline()
+
+    with open("students.txt", "a") as file:
+        students_dict = {}
+        students_dict[student_id] = isbn_number
+        file.writelines(students_dict)
 
 
 def list_students():
     with open("students.txt", "r") as file:
-        file.read()
+        content = file.read()
+        print(content)
 
 
 def main_loop():
-    func_list = [list_books, list_checked_books, add_book, delete_book,
+    func_list = func_list = [list_books, list_checked_books, add_book, delete_book,
                  search_by_isbn, search_by_name, check_out_book, list_students]
     while True:
         main_menu()
-        option = input("\nYour option (1/8): ")
+        option = input("\nYour option (1/9): ")
 
         try:
             option = int(option)
             if option == 9:
                 break
-            if 1 <= option <= 8:
-                func_list[option - 1]()
+            elif 1 <= option <= 8:
+                func_list[option-1]()
             else:
                 print("Invalid option, try again!")
         except:
